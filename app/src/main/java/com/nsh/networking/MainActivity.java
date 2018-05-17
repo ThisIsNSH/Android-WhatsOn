@@ -4,6 +4,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -11,6 +13,7 @@ import com.ibm.watson.developer_cloud.assistant.v1.Assistant;
 import com.ibm.watson.developer_cloud.assistant.v1.model.InputData;
 import com.ibm.watson.developer_cloud.assistant.v1.model.MessageOptions;
 import com.ibm.watson.developer_cloud.assistant.v1.model.MessageResponse;
+import com.ibm.watson.developer_cloud.http.ServiceCallback;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     EditText input_field;
     TextView output_field;
     String input_text;
+    Button hit;
     String workspaceId = "7a7bc018-cbd9-4f7e-a5ff-a6e5ced04ffe";
 
     @Override
@@ -32,19 +36,13 @@ public class MainActivity extends AppCompatActivity {
 
         assistant.setEndPoint("https://gateway.watsonplatform.net/assistant/api");
 
-        input_field.addTextChangedListener(new TextWatcher() {
+        hit = findViewById(R.id.hit);
+        input_field = findViewById(R.id.input);
+        output_field = findViewById(R.id.output);
+
+        hit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
+            public void onClick(View view) {
                 input_text = input_field.getText().toString();
 
                 InputData input = new InputData.Builder(input_text).build();
@@ -52,13 +50,22 @@ public class MainActivity extends AppCompatActivity {
                 MessageOptions options = new MessageOptions.Builder(workspaceId)
                         .input(input)
                         .build();
+                assistant.message(options).enqueue(new ServiceCallback<MessageResponse>() {
+                    @Override
+                    public void onResponse(MessageResponse response) {
+                        output_field.setText(response.getOutput().getText().get(0).toString());
+                    }
 
-                MessageResponse response = assistant.message(options).execute();
+                    @Override
+                    public void onFailure(Exception e) {
 
-                output_field.setText(response.toString());
+                    }
+                });
+
+
+
             }
         });
-
 
     }
 }
