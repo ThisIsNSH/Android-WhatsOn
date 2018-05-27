@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     TextView output_field;
     String input_text;
     Button hit;
-    String workspaceId = "7a7bc018-cbd9-4f7e-a5ff-a6e5ced04ffe";
+    String workspaceId = "XXX";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,15 +36,13 @@ public class MainActivity extends AppCompatActivity {
 
         assistant = new Assistant(
                 "2018-02-16",
-                "29ac1045-e0ca-4412-97b2-7656be2d6ac7",
-                "PzZq8LwHY834");
+                "XXX",
+                "XXX");
 
         assistant.setEndPoint("https://gateway.watsonplatform.net/assistant/api");
-
-        RuntimeIntent intent = new RuntimeIntent();
-        intent.setIntent("welcome");
+        InputData inputData = new InputData.Builder("welcome").build();
         MessageOptions options = new MessageOptions.Builder(workspaceId)
-                .addIntent(intent)
+                .input(inputData)
                 .build();
         assistant.message(options).enqueue(new ServiceCallback<MessageResponse>() {
             @Override
@@ -61,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         input_field.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                input_field.setInputType(InputType.TYPE_CLASS_TEXT);
+                input_field.setFocusableInTouchMode(true);
             }
         });
 
